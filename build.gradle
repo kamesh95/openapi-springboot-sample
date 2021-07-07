@@ -13,6 +13,7 @@ plugins {
     id 'java'
     id 'org.openapi.generator' version '4.2.1'
     id 'org.springframework.boot' version '2.2.1.RELEASE'
+    id 'info.solidsoft.pitest' version '1.5.1'
 }
 
 repositories {
@@ -31,6 +32,19 @@ openApiMeta {
 
 openApiValidate {
     inputSpec = "${rootDir}/spec/openapi.yaml"
+}
+
+pitest {
+    /*
+    * I have included the org.open* glob because this is the package name in generated code.
+    * In my other project, the package prefix for normal src code and generated code is same that is why it takes
+    * classes from both src and generated folder. However in this case I need to specify org.open* explicitly to include the generated
+    * code classes to simulate the behaviour. Even with the generated code package glob, it should ignore those classes based
+    * on the generated annotations.
+    */
+    targetClasses = ['com.example.springboot*', 'org.open*']
+    threads = 4
+    outputFormats = ['XML', 'HTML']
 }
 
 // Builds a spring client by default.
